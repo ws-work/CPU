@@ -1,8 +1,0 @@
-[submodule "sram_func"]
-	path = verilator/sram_func
-	url = https://github.com/cyyself/soc-simulator.git
-	branch = nscscc_sram_func
-[submodule "axi"]
-	path = verilator/axi
-	url = https://github.com/cyyself/soc-simulator.git
-	branch = nscscc_axi
