@@ -71,7 +71,7 @@ module cp0_reg(
 				endcase
 			end
 			case (excepttype_i)
-				32'h00000001:begin 
+				32'h00000001:begin // 中断（其实写入的cause为0）
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -83,7 +83,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b00000;
 				end
-				32'h00000004:begin 
+				32'h00000004:begin // 取指非对齐或Load非对齐
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -96,7 +96,7 @@ module cp0_reg(
 					cause_o[6:2] <= 5'b00100;
 					badvaddr <= bad_addr_i;
 				end
-				32'h00000005:begin 
+				32'h00000005:begin // Store非对齐
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -109,7 +109,7 @@ module cp0_reg(
 					cause_o[6:2] <= 5'b00101;
 					badvaddr <= bad_addr_i;
 				end
-				32'h00000008:begin 
+				32'h00000008:begin // Syscall异常
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -121,7 +121,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01000;
 				end
-				32'h00000009:begin 
+				32'h00000009:begin // BREAK异常
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -133,7 +133,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01001;
 				end
-				32'h0000000a:begin 
+				32'h0000000a:begin // 保留指令（译码失败）
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -145,7 +145,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01010;
 				end
-				32'h0000000c:begin 
+				32'h0000000c:begin // ALU溢出异常
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -157,7 +157,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01100;
 				end
-				32'h0000000d:begin 
+				32'h0000000d:begin // 自陷指令（不在57条中）
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -169,7 +169,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01101;
 				end
-				32'h0000000e:begin 
+				32'h0000000e:begin // eret异常（准确说不叫异常，但通过这个在跳转到epc的同时清零status的EXL）
 					status_o[1] <= 1'b0;
 				end
 				default : /* default */;
