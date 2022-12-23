@@ -21,18 +21,22 @@
 
 
 module hilo_reg(
-	input wire clk,rst,we,
-	input wire[31:0] hi,lo,
-	output reg[31:0] hi_o,lo_o
+	input  wire clk,rst,we,
+	input  wire [31:0] hi_i,lo_i,
+	output wire [31:0] hi_o,lo_o
     );
 	
-	always @(negedge clk) begin
+	reg [31:0] hi, lo;
+	always @(posedge clk) begin
 		if(rst) begin
-			hi_o <= 0;
-			lo_o <= 0;
+			hi <= 0;
+			lo <= 0;
 		end else if (we) begin
-			hi_o <= hi;
-			lo_o <= lo;
+			hi <= hi_i;
+			lo <= lo_i;
 		end
 	end
+
+	assign hi_o = hi;
+	assign lo_o = lo;
 endmodule
