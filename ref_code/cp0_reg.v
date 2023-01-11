@@ -17,21 +17,24 @@ module cp0_reg(
 	input wire is_in_delayslot_i,
 	input wire[`RegBus] bad_addr_i,
 
-	output reg[`RegBus] data_o,
-	output reg[`RegBus] count_o,
-	output reg[`RegBus] compare_o,
-	output reg[`RegBus] status_o,
-	output reg[`RegBus] cause_o,
-	output reg[`RegBus] epc_o,
-	output reg[`RegBus] config_o,
-	output reg[`RegBus] prid_o,
-	output reg[`RegBus] badvaddr,
-	output reg timer_int_o
+	output wire[`RegBus] count_o,
+	output reg [`RegBus] data_o,
+	output reg [`RegBus] compare_o,
+	output reg [`RegBus] status_o,
+	output reg [`RegBus] cause_o,
+	output reg [`RegBus] epc_o,
+	output reg [`RegBus] config_o,
+	output reg [`RegBus] prid_o,
+	output reg [`RegBus] badvaddr,
+	output reg           timer_int_o
     );
 
+	reg[32:0] count;
+	assign count_o = count[32:1];
+	
 	always @(posedge clk) begin
 		if(rst == `RstEnable) begin
-			count_o <= `ZeroWord;
+			count <= 0;
 			compare_o <= `ZeroWord;
 			status_o <= 32'b00010000000000000000000000000000;
 			cause_o <= `ZeroWord;
@@ -40,7 +43,7 @@ module cp0_reg(
 			prid_o <= 32'b00000000010011000000000100000010;
 			timer_int_o <= `InterruptNotAssert;
 		end else begin
-			count_o <= count_o + 1;
+			count <= count + 1;
 			cause_o[15:10] <= int_i;
 			if(compare_o != `ZeroWord && count_o == compare_o) begin
 				/* code */
@@ -50,7 +53,7 @@ module cp0_reg(
 				/* code */
 				case (waddr_i)
 					`CP0_REG_COUNT:begin 
-						count_o <= data_i;
+						count[32:1] <= data_i;
 					end
 					`CP0_REG_COMPARE:begin 
 						compare_o <= data_i;
