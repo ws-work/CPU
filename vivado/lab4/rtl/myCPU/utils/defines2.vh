@@ -153,6 +153,24 @@
 `define MFC0_CONTROL 	5'b00101
 `define MTC0_CONTROL 	5'b00110
 
+//ALU OP 8bit
+`define EXE_AND_OP  8'b00100100
+`define EXE_OR_OP   8'b00100101
+`define EXE_XOR_OP  8'b00100110
+`define EXE_NOR_OP  8'b00100111
+
+`define EXE_ANDI_OP 8'b01011001
+`define EXE_ORI_OP  8'b01011010
+`define EXE_XORI_OP 8'b01011011
+`define EXE_LUT_OP  8'b01011100
+
+`define EXE_SLL_OP  8'b01111100
+`define EXE_SLLV_OP 8'b00000100
+`define EXE_SRL_OP  8'b00000010
+`define EXE_SRLV_OP 8'b00000110
+`define EXE_SRA_OP  8'b00000011
+`define EXE_SRAV_OP 8'b00000111
+
 //inst ROM macro definition
 `define InstAddrBus		31:0
 `define InstBus 		31:0
