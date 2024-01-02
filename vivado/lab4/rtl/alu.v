@@ -20,16 +20,33 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module alu(
+    input wire clk,
+    input wire rst,
 	input wire[31:0] a,b,
 	input wire[4:0] sa,
 	input wire[5:0] op,
 	output reg[31:0] y,
 	output overflow,           
-	output wire zero
+	output wire zero,
+	output wire divstall,
+	output reg[63:0] result_64
     );
-    
+   
 wire [31:0] subresult;
+wire div_ready;
+wire signed_div;
+wire [63:0] result_o;
+reg start_i;
 
+assign divstall = 0;
+div div(clk,rst,signed_div,a,b,start_i,0,result_o,div_ready);
+
+always@(div_ready)begin
+case(div_ready)
+            1'b1:start_i <= 0;
+            1'b0:start_i <= 1;
+endcase
+end
 
 assign overflow = (op == 100000)? (y[31] && !a[31] && !b[31]) || (!y[31] && a[31] && b[31]):
                   (op == 100010)? ((a[31]&!b[31])&!y[31]) || ((!a[31]&b[31])&y[31]):
@@ -51,8 +68,11 @@ assign subresult = a + (~b + 1);
 			6'b000110: y <= b >> a;
 			6'b000111: y <= ({32{b[31]}} << (6'd32 - {1'b0,a[4:0]})) | b>>a[4:0];
 			6'b100100: y <= a & b;
+			6'b110100: y <= a & { {16{1'b0}} ,b[15:0]};
 			6'b100101: y <= a | b;
+			6'b110101: y <= a | { {16{1'b0}} ,b[15:0]};
 			6'b100110: y <= a ^ b;
+			6'b110111: y <= a ^ { {16{1'b0}} ,b[15:0]};
 			6'b100111: y <= ~(a|b);  
 			6'b001000: y <= {b[15:0],b[31:16]};
 			
@@ -61,6 +81,8 @@ assign subresult = a + (~b + 1);
 			
 			6'b100000,6'b100001: y <= a + b;
 			6'b100010,6'b100011: y <= a + (~b + 1);
+			
+			6'b011010: result_64 <= result_o;
 			
 			default : y <= 32'b0;
 		endcase	

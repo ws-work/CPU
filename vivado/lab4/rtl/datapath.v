@@ -69,6 +69,9 @@ module datapath(
 	//writeback stage
 	wire [4:0] writeregW;
 	wire [31:0] aluoutW,readdataW,resultW;
+	wire divstallE;
+	wire overflowE,zeroE;
+	wire [63:0] aluoutE_64;
 
 	//hazard detection
 	hazard h(
@@ -86,6 +89,8 @@ module datapath(
 		memtoregE,
 		forwardaE,forwardbE,
 		flushE,
+		
+		divstall,
 		//mem stage
 		writeregM,
 		regwriteM,
@@ -136,7 +141,8 @@ module datapath(
 	mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 	mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
 	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);//b£¬1£¿imm£ºreg
-	alu alu(srca2E,srcb3E,saE,alucontrolE,aluoutE);
+	//div div(clk,rsk,0,);
+	alu alu(clk,rst,srca2E,srcb3E,saE,alucontrolE,aluoutE,overflowE,zeroE,divstallE,aluoutE_64);
 	mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 	//mem stage

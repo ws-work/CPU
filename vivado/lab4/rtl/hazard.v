@@ -35,6 +35,9 @@ module hazard(
 	input wire memtoregE,
 	output reg[1:0] forwardaE,forwardbE,
 	output wire flushE,
+	
+	input wire divstall,
+	
 	//mem stage
 	input wire[4:0] writeregM,
 	input wire regwriteM,
@@ -56,6 +59,7 @@ module hazard(
 	always @(*) begin
 		forwardaE = 2'b00;
 		forwardbE = 2'b00;
+		
 		if(rsE != 0) begin
 			/* code */
 			if(rsE == writeregM & regwriteM) begin
@@ -85,10 +89,18 @@ module hazard(
 				(writeregE == rsD | writeregE == rtD) |
 				memtoregM &
 				(writeregM == rsD | writeregM == rtD));
-	assign #1 stallD = lwstallD | branchstallD;
+	assign #1 stallD = lwstallD | branchstallD | divstall;
 	assign #1 stallF = stallD;
 		//stalling D stalls all previous stages
 	assign #1 flushE = stallD;
+	//TODO
+	/*
+	
+	divstall 时 floprc清空还是暂停
+	
+	
+	*/
+	
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store
   	//       if source comes from load;

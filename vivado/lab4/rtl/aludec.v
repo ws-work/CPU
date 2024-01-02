@@ -29,16 +29,16 @@
 		case (aluop)
 //			2'b00: alucontrol <= 6'b010;//add (for lw/sw/addi)
 //			2'b01: alucontrol <= 6'b110;//sub (for beq)
-            8'b00000010: alucontrol <= funct;//and,or,xor,nor,sll,srl,sra, add(overflow),sub, addu,subu,sltu,
+            8'b00000010: alucontrol <= funct;//and,or,xor,nor,sll,srl,sra, add(overflow),sub, addu,subu,sltu,div
             
             8'b00001000: alucontrol <= 6'b100000;//addi(overflow)
             8'b00001001: alucontrol <= 6'b100001;//addiu
             8'b00001010: alucontrol <= 6'b101010;//slti
             8'b00001011: alucontrol <= 6'b101011;//sltiu
 
-            `EXE_ANDI_OP: alucontrol <= 6'b100100;//andi
-            `EXE_ORI_OP : alucontrol <= 6'b100101;//ori
-            `EXE_XORI_OP: alucontrol <= 6'b100110;//xori
+            `EXE_ANDI_OP: alucontrol <= 6'b110100;//andi
+            `EXE_ORI_OP : alucontrol <= 6'b110101;//ori
+            `EXE_XORI_OP: alucontrol <= 6'b110110;//xori
             `EXE_LUT_OP : alucontrol <= 6'b001000;//lui
             
             

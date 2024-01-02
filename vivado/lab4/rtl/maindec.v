@@ -47,6 +47,8 @@ module maindec(
             6'b001011:controls <= 15'b1010000_00001011;//sltiu
             
             
+            
+            
 
 			
 //			6'b100011:controls <= 9'b101001000;//LW
