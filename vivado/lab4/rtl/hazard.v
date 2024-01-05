@@ -1,48 +1,51 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/11/22 10:23:13
-// Design Name: 
+// Design Name:
 // Module Name: hazard
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module hazard(
 	//fetch stage
-	output wire stallF,
+	output wire stallF,flushF,
 	//decode stage
 	input wire[4:0] rsD,rtD,
 	input wire branchD,
 	output wire forwardaD,forwardbD,
-	output wire stallD,
+	output wire stallD,flushD,
 	//execute stage
 	input wire[4:0] rsE,rtE,
 	input wire[4:0] writeregE,
 	input wire regwriteE,
 	input wire memtoregE,
+	input wire div_running,
 	output reg[1:0] forwardaE,forwardbE,
-	output wire flushE,
+	output wire stallE,flushE,
 	//mem stage
 	input wire[4:0] writeregM,
 	input wire regwriteM,
 	input wire memtoregM,
+	output wire flushM,
 
 	//write back stage
 	input wire[4:0] writeregW,
-	input wire regwriteW
+	input wire regwriteW,
+	output wire flushW
     );
 
 	wire lwstallD,branchstallD;
@@ -50,7 +53,7 @@ module hazard(
 	//forwarding sources to D stage (branch equality)
 	assign forwardaD = (rsD != 0 & rsD == writeregM & regwriteM);
 	assign forwardbD = (rtD != 0 & rtD == writeregM & regwriteM);
-	
+
 	//forwarding sources to E stage (ALU)
 
 	always @(*) begin
@@ -81,14 +84,22 @@ module hazard(
 	//stalls
 	assign #1 lwstallD = memtoregE & (rtE == rsD | rtE == rtD);
 	assign #1 branchstallD = branchD &
-				(regwriteE & 
+				(regwriteE &
 				(writeregE == rsD | writeregE == rtD) |
 				memtoregM &
 				(writeregM == rsD | writeregM == rtD));
-	assign #1 stallD = lwstallD | branchstallD;
-	assign #1 stallF = stallD;
+	assign stallD = lwstallD | branchstallD | div_running;
+	assign stallF = stallD;
+	assign stallE = div_running;
 		//stalling D stalls all previous stages
-	assign #1 flushE = stallD;
+
+
+	assign flushF = 1'b0;
+	assign flushD = 1'b0;
+	assign flushE = lwstallD | branchstallD;
+	assign flushM = 1'b0;
+	assign flushW = 1'b0;
+
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store
   	//       if source comes from load;

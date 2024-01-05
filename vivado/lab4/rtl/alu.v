@@ -21,6 +21,7 @@
 `include "defines2.vh"
 
 module alu(
+	input wire clk,rst,
 	input wire[31:0] a,b,
 	input wire[4:0] sa,
 	input wire[5:0] op,
@@ -30,11 +31,37 @@ module alu(
 	output overflow,
 	output wire zero,
 	output wire hilo_ena,
-	output reg [63:0] hilo
+	output reg [63:0] hilo,
+	output wire div_running //div在运行时，暂停流水线
     );
 
 wire [31:0] subresult,mult_a,mult_b;
 wire [63:0] hilo_tmp;
+
+
+wire signed_div_i,start_i,annul_i,ready_o;
+wire [31:0] opdata1_i,opdata2_i;
+
+// assign div_stall = !(rst | ready_o);
+assign signed_div_i = (op == `DIV)? 1'b1: 1'b0;
+assign start_i = (op == `DIV | op == `DIVU & ~ready_o)? 1'b1: 1'b0;
+assign div_running = start_i;
+assign annul_i =1'b0;
+
+assign {opdata1_i,opdata2_i} =  (op == `DIV | op == `DIVU) ? { a , b } : 64'b0;
+
+
+div div(
+	.clk(clk),
+	.rst(rst),
+	.signed_div_i(signed_div_i),
+	.opdata1_i(opdata1_i),
+	.opdata2_i(opdata2_i),
+	.start_i(start_i),
+	.annul_i(annul_i),
+	.result_o(result_o),
+	.ready_o(ready_o)
+);
 
 
 assign mult_a = a[31] == 1'b1 ? (~a + 1) : a;
@@ -44,12 +71,7 @@ assign hilo_tmp = (op == `MULT) ? ((a[31]^b[31] == 1'b1)? ~(mult_a*mult_b)+1 :mu
 			      (op == `MULTU) ? (a*b)	:
 			      64'b0;
 
-assign hilo_ena = (op ==  `MULT) || (op == `MULTU) || (op == `MTHI) || (op == `MTLO)? 1'b1 :1'b0;
-
-
-
-
-
+assign hilo_ena = (op ==  `MULT) || (op == `MULTU) || (op == `MTHI) || (op == `MTLO) || (op == `DIV) || (op == `DIVU)? 1'b1 :1'b0;
 
 
 assign overflow = (op == 100000)? (y[31] && !a[31] && !b[31]) || (!y[31] && a[31] && b[31]):
@@ -83,6 +105,7 @@ assign subresult = a + (~b + 1);
 
 			`MULT:     hilo <= hilo_tmp;
 		    `MULTU:    hilo <= hilo_tmp;
+			`DIV:      hilo <= result_o;
 
 			`MFHI:     y <= hi_o;
 			`MFLO:     y <= lo_o;
