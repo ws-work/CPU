@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/11/07 10:58:03
-// Design Name: 
+// Design Name:
 // Module Name: mips
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,32 +26,32 @@ module mips(
 	input wire[31:0] instrF,
 	output wire memwriteM,
 	output wire[31:0] aluoutM,writedataM,
-	input wire[31:0] readdataM 
+	input wire[31:0] readdataM
     );
-	
+
 	wire [5:0] opD,functD;
 	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,
 			regwriteE,regwriteM,regwriteW;
 	wire [5:0] alucontrolE;
-	wire flushE,equalD;
+	wire stallE,flushE,flushM,flushW,equalD;
 
 	controller c(
 		clk,rst,
 		//decode stage
 		opD,functD,
 		pcsrcD,branchD,equalD,jumpD,
-		
+
 		//execute stage
-		flushE,
+		stallE,flushE,
 		memtoregE,alusrcE,
-		regdstE,regwriteE,	
+		regdstE,regwriteE,
 		alucontrolE,
 
 		//mem stage
 		memtoregM,memwriteM,
-		regwriteM,
+		regwriteM,flushM,
 		//write back stage
-		memtoregW,regwriteW
+		memtoregW,regwriteW,flushW
 		);
 	datapath dp(
 		clk,rst,
@@ -68,15 +68,17 @@ module mips(
 		alusrcE,regdstE,
 		regwriteE,
 		alucontrolE,
-		flushE,
+		flushE,stallE,
 		//mem stage
 		memtoregM,
 		regwriteM,
 		aluoutM,writedataM,
+		flushM,
 		readdataM,
 		//writeback stage
 		memtoregW,
-		regwriteW
+		regwriteW,
+		flushW
 	    );
-	
+
 endmodule

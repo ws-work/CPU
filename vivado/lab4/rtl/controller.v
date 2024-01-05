@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/10/23 15:21:30
-// Design Name: 
+// Design Name:
 // Module Name: controller
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,21 +25,21 @@ module controller(
 	//decode stage
 	input wire[5:0] opD,functD,
 	output wire pcsrcD,branchD,equalD,jumpD,
-	
+
 	//execute stage
-	input wire flushE,
+	input wire stallE,flushE,
 	output wire memtoregE,alusrcE,
-	output wire regdstE,regwriteE,	
+	output wire regdstE,regwriteE,
 	output wire[5:0] alucontrolE,
 
 	//mem stage
 	output wire memtoregM,memwriteM,
-				regwriteM,
+				regwriteM,flushM,
 	//write back stage
-	output wire memtoregW,regwriteW
+	output wire memtoregW,regwriteW,flushW
 
     );
-	
+
 	//decode stage
 	wire[7:0] aluopD;
 	wire memtoregD,memwriteD,alusrcD,
@@ -62,20 +62,21 @@ module controller(
 	assign pcsrcD = branchD & equalD;
 
 	//pipeline registers
-	floprc #(11) regE(
+	flopenrc #(11) regE(
 		clk,
 		rst,
+		~stallE,
 		flushE,
 		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD},
 		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE}
 		);
-	flopr #(8) regM(
-		clk,rst,
+	floprc #(8) regM(
+		clk,rst,flushM,
 		{memtoregE,memwriteE,regwriteE},
 		{memtoregM,memwriteM,regwriteM}
 		);
-	flopr #(8) regW(
-		clk,rst,
+	floprc #(8) regW(
+		clk,rst,flushW,
 		{memtoregM,regwriteM},
 		{memtoregW,regwriteW}
 		);

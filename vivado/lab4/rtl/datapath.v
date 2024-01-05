@@ -20,24 +20,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module datapath(input wire clk,rst,
-                output wire[31:0] pcF,
-                input wire[31:0] instrF,
-                input wire pcsrcD,branchD,
-                input wire jumpD,
-                output wire equalD,
-                output wire[5:0] opD,functD,
-                input wire memtoregE,
-                input wire alusrcE,regdstE,
-                input wire regwriteE,
-                input wire[5:0] alucontrolE,
-                output wire flushE,
-                input wire memtoregM,
-                input wire regwriteM,
-                output wire[31:0] aluoutM,writedataM,
-                input wire[31:0] readdataM,
-                input wire memtoregW,
-                input wire regwriteW);
+module datapath(
+    input wire clk,rst,
+    output wire[31:0] pcF,
+    input wire[31:0] instrF,
+    input wire pcsrcD,branchD,
+    input wire jumpD,
+    output wire equalD,
+    output wire[5:0] opD,functD,
+    input wire memtoregE,
+    input wire alusrcE,regdstE,
+    input wire regwriteE,
+    input wire[5:0] alucontrolE,
+    output wire flushE,stallE,
+    input wire memtoregM,
+    input wire regwriteM,
+    output wire[31:0] aluoutM,writedataM,
+    output wire flushM,
+    input wire[31:0] readdataM,
+    input wire memtoregW,
+    input wire regwriteW,
+    output wire flushW
+);
 
     //fetch stage
     wire stallF;
