@@ -65,6 +65,9 @@ module datapath(input wire clk,rst,
     wire divstallE;
     wire overflowE,zeroE;
     wire [63:0] aluoutE_64;
+    wire [31:0] hi_o;
+    wire [31:0] lo_o;
+    wire hilo_ena;
 
     //hazard detection
     hazard h(
@@ -138,9 +141,23 @@ module datapath(input wire clk,rst,
     .b(srcb3E),
     .sa(saE),
     .op(alucontrolE),
+    .lo_o(lo_o),
+    .hi_o(hi_o),
     .y(aluoutE),
     .overflow(overflowE),
-    .zero(zeroE)
+    .zero(zeroE),
+    .hilo_ena(hilo_ena),
+    .hilo(aluoutE_64)
+    );
+
+    hilo_reg hilo_reg(
+        .clk(clk),
+        .rst(rst),
+        .we(hilo_ena),
+        .hi_i(aluoutE_64[63:32]),
+        .lo_i(aluoutE_64[31:0]),
+        .hi_o(hi_o),
+        .lo_o(lo_o)
     );
 
     mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
