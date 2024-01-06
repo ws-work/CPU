@@ -544,3 +544,18 @@ dismissDialog("Confirm Close"); // u
 // Tcl Message: close_sim 
 // Tcl Message: INFO: [Simtcl 6-16] Simulation closed 
 dismissDialog("Close"); // bq
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: update_compile_order -fileset sources_1 
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: update_compile_order -fileset sources_1 
+// [GUI Memory]: 140 MB (+601kb) [00:14:10]
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
