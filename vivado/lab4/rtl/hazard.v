@@ -40,12 +40,12 @@ module hazard(
 	input wire[4:0] writeregM,
 	input wire regwriteM,
 	input wire memtoregM,
-	output wire flushM,
+	output wire stallM,flushM,
 
 	//write back stage
 	input wire[4:0] writeregW,
 	input wire regwriteW,
-	output wire flushW
+	output wire stallW,flushW
     );
 
 	wire lwstallD,branchstallD;
@@ -91,6 +91,8 @@ module hazard(
 	assign stallD = lwstallD | branchstallD | div_running;
 	assign stallF = stallD;
 	assign stallE = div_running;
+	assign stallM = stallE;
+	assign stallW = stallE;
 		//stalling D stalls all previous stages
 
 

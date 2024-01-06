@@ -18,14 +18,14 @@ _start:
    ori  $3,$0,0x0000           # $3 = 0x00000000
 
 
-   sub   $3,$1,$3              ## $3 = 0x80000010         
+   sub   $3,$1,$3              ## $3 = 0x80000010
    subu  $3,$3,$2              ## $3 = 0xF
 
    addi $3,$3,2                ## $3 = 0x11
    ori  $3,$0,0x0000           # $3 = 0x00000000
    addiu $3,$3,0x8000          ## $3 = 0xffff8000
-   
-   sll $1,$1,1		
+
+   sll $1,$1,1
    add  $3,$2,$1               ## $3 = 0x80000021
 
    #########     slt\sltu\slti\sltiu     ##########
@@ -39,11 +39,11 @@ _start:
 
    #########          mult\multu          ##########
 
-   ori  $1,$0,0xffff                  
+   ori  $1,$0,0xffff
    sll  $1,$1,16
    ori  $1,$1,0xfffb           # $1 = -5
    ori  $2,$0,6                # $2 = 6
-  
+
    mult $1,$2                  ## hi = 0xffffffff
                                ## lo = 0xffffffe2
 
@@ -53,12 +53,12 @@ _start:
    nop
 
    ################# div\divu ####################
-   ori  $2,$0,0xffff                  
+   ori  $2,$0,0xffff
    sll  $2,$2,16
-   ori  $2,$2,0xfff1           ## $2 = -15
-   ori  $3,$0,0x11             ## $3 = 17
+   ori  $2,$2,0xfff1           ## $2 = -15 0xFFFFFFF1
+   ori  $3,$0,0x11             ## $3 = 17  0x11
 
-   div $zero,$2,$3             ## hi = 0xfffffff1            
+   div $zero,$2,$3             ## hi = 0xfffffff1
                                ## lo = 0x0
    divu $zero,$2,$3            ## hi = 0x00000003
                                ## lo = 0x0f0f0f0e

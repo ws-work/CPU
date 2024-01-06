@@ -36,11 +36,11 @@ module datapath(
     input wire memtoregM,
     input wire regwriteM,
     output wire[31:0] aluoutM,writedataM,
-    output wire flushM,
+    output wire flushM,stallM,
     input wire[31:0] readdataM,
     input wire memtoregW,
     input wire regwriteW,
-    output wire flushW
+    output wire flushW,stallW
 );
 
     //fetch stage
@@ -94,12 +94,12 @@ module datapath(
 	writeregM,
 	regwriteM,
 	memtoregM,
-	flushM,
+	stallM,flushM,
 
 	//write back stage
 	writeregW,
 	regwriteW,
-	flushW
+	stallW,flushW
     );
 
     //next PC logic (operates in fetch an decode)
@@ -174,13 +174,13 @@ module datapath(
     mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
     //mem stage
-    floprc #(32) r1M(clk,rst,flushM,srcb2E,writedataM);
-    floprc #(32) r2M(clk,rst,flushM,aluoutE,aluoutM);
-    floprc #(5) r3M(clk,rst,flushM,writeregE,writeregM);
+    flopenrc #(32) r1M(clk,rst,~stallM,flushM,srcb2E,writedataM);
+    flopenrc #(32) r2M(clk,rst,~stallM,flushM,aluoutE,aluoutM);
+    flopenrc #(5) r3M(clk,rst,~stallM,flushM,writeregE,writeregM);
 
     //writeback stage
-    floprc #(32) r1W(clk,rst,flushW,aluoutM,aluoutW);
-    floprc #(32) r2W(clk,rst,flushW,readdataM,readdataW);
-    floprc #(5) r3W(clk,rst,flushW,writeregM,writeregW);
+    flopenrc #(32) r1W(clk,rst,~stallW,flushW,aluoutM,aluoutW);
+    flopenrc #(32) r2W(clk,rst,~stallW,flushW,readdataM,readdataW);
+    flopenrc #(5) r3W(clk,rst,~stallW,flushW,writeregM,writeregW);
     mux2 #(32) resmux(aluoutW,readdataW,memtoregW,resultW);
 endmodule
