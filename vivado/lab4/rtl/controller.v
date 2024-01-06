@@ -33,10 +33,11 @@ module controller(
 	output wire[5:0] alucontrolE,
 
 	//mem stage
-	output wire memtoregM,memwriteM,
-				regwriteM,flushM,
+	output wire memtoregM,memwriteM,regwriteM,
+    input wire	stallM,flushM,
 	//write back stage
-	output wire memtoregW,regwriteW,flushW
+	output wire memtoregW,regwriteW,
+	input wire stallW,flushW
 
     );
 
@@ -70,13 +71,13 @@ module controller(
 		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD},
 		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE}
 		);
-	floprc #(8) regM(
-		clk,rst,flushM,
+	flopenrc #(8) regM(
+		clk,rst,~stallM,flushM,
 		{memtoregE,memwriteE,regwriteE},
 		{memtoregM,memwriteM,regwriteM}
 		);
-	floprc #(8) regW(
-		clk,rst,flushW,
+	flopenrc #(8) regW(
+		clk,rst,~stallW,flushW,
 		{memtoregM,regwriteM},
 		{memtoregW,regwriteW}
 		);
