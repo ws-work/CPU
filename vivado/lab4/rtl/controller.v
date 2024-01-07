@@ -54,7 +54,7 @@ module controller(
 
 	maindec md(
 		opD,
-		rt,
+		rtD,
 		functD,
 		memtoregD,memwriteD,
 		branchD,alusrcD,

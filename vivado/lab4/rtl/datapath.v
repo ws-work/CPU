@@ -135,7 +135,7 @@ module datapath(
     adder pcadd2(pcplus4D,signimmshD,pcbranchD);
     mux2 #(32) forwardamux(srcaD,aluoutM,forwardaD,srca2D);
     mux2 #(32) forwardbmux(srcbD,aluoutM,forwardbD,srcb2D);
-    eqcmp comp(srca2D,srcb2D,equalD);
+    eqcmp comp(srca2D,srcb2D,opD,rtD,equalD);
     adder pcadd3(pcplus4D,32'b100,pcplus8D);
 
     assign opD    = instrD[31:26];

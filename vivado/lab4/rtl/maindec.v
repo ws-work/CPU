@@ -73,6 +73,11 @@ module maindec(
             6'b001011:controls <= 15'b10100_00101011;//sltiu
 
 			`JAL: 	  controls <= 15'b10000_00000000;
+			`REGIMM_INST: case(rt)
+				`BLTZAL,`BGEZAL: controls <= 15'b10000_00000000;
+				default: controls <= 15'b0000000_00000000;
+			endcase
+
 
 
 //			6'b100011:controls <= 9'b101001000;//LW
