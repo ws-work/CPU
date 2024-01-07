@@ -38,6 +38,7 @@
             `EXE_ORI_OP : alucontrol <= 6'b110101;//ori
             `EXE_XORI_OP: alucontrol <= 6'b110111;//xori
             `EXE_LUT_OP : alucontrol <= `LUI;//lui
+            8'b00101101 : alucontrol <= 6'b101101;
 
 
 			default :

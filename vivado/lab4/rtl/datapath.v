@@ -43,6 +43,7 @@ module datapath(
     input wire AnsSwE,AddSwE, //
     output wire[31:0] aluoutM,writedataM,
     output wire flushM,stallM,
+	output wire[3:0] memwriteM,
     input wire[31:0] readdataM,
 
     input wire memtoregW,
@@ -71,6 +72,7 @@ module datapath(
     wire [31:0] pcplus8E;
     //mem stage
     wire [4:0] writeregM;
+	wire [5:0] alucontrolM;
     //writeback stage
     wire [4:0] writeregW;
     wire [31:0] aluoutW,readdataW,resultW;
@@ -81,6 +83,8 @@ module datapath(
     wire [31:0] lo_o;
     wire hilo_ena;
     wire div_running;
+	wire [5:0] alucontrolW;
+	wire [31:0] readdata2W;
 
     //hazard detection
     hazard h(
@@ -193,13 +197,31 @@ module datapath(
     flopenrc #(32) r1M(clk,rst,~stallM,flushM,srcb2E,writedataM);
     flopenrc #(32) r2M(clk,rst,~stallM,flushM,aluout2E,aluoutM);
     flopenrc #(5) r3M(clk,rst,~stallM,flushM,writereg2E,writeregM);
+    flopenrc #(6) r4M(clk,rst,~stallM,flushM,alucontrolE,alucontrolM);
 
     mux2 #(32) wrmux1(aluoutE,pcplus8E,AnsSwE,aluout2E);
     mux2 #(32) wrmux2(writeregE,5'b11111,AddSwE,writereg2E);
+
+	sw_select sw_select(
+		.adesM(1'b0),
+		.addressM(aluoutM),
+		.alucontrolM(alucontrolM),
+		.memwriteM(memwriteM)
+	);
 
     //writeback stage
     flopenrc #(32) r1W(clk,rst,~stallW,flushW,aluoutM,aluoutW);
     flopenrc #(32) r2W(clk,rst,~stallW,flushW,readdataM,readdataW);
     flopenrc #(5) r3W(clk,rst,~stallW,flushW,writeregM,writeregW);
-    mux2 #(32) resmux(aluoutW,readdataW,memtoregW,resultW);
+	flopenrc #(6) r4W(clk,rst,~stallM,flushM,alucontrolM,alucontrolW);
+
+	lw_select lw_select(
+		.adelW(1'b0),
+		.aluoutW(aluoutW),
+		.alucontrolW(alucontrolW),
+		.lwresultW(readdataW),
+		.resultW(readdata2W)
+	);
+
+    mux2 #(32) resmux(aluoutW,readdata2W,memtoregW,resultW);
 endmodule

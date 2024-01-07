@@ -33,7 +33,7 @@ module controller(
 	output wire[5:0] alucontrolE,
 
 	//mem stage
-	output wire memtoregM,memwriteM,regwriteM,AnsSwE,AddSwE,
+	output wire memtoregM,regwriteM,AnsSwE,AddSwE,
     input wire	stallM,flushM,
 	//write back stage
 	output wire memtoregW,regwriteW,
@@ -43,12 +43,11 @@ module controller(
 
 	//decode stage
 	wire[7:0] aluopD;
-	wire memtoregD,memwriteD,alusrcD,
+	wire memtoregD,alusrcD,
 		regdstD,regwriteD,jalD,balD;
 	wire[5:0] alucontrolD;
 
 	//execute stage
-	wire memwriteE;
 	wire jalE,jrE,balE;
 
 
@@ -56,7 +55,7 @@ module controller(
 		opD,
 		rtD,
 		functD,
-		memtoregD,memwriteD,
+		memtoregD,
 		branchD,alusrcD,
 		regdstD,regwriteD,
 		jumpD,
@@ -77,13 +76,13 @@ module controller(
 		rst,
 		~stallE,
 		flushE,
-		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,jalD,jrD,balD},
-		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,jalE,jrE,balE}
+		{memtoregD,alusrcD,regdstD,regwriteD,alucontrolD,jalD,jrD,balD},
+		{memtoregE,alusrcE,regdstE,regwriteE,alucontrolE,jalE,jrE,balE}
 		);
 	flopenrc #(8) regM(
 		clk,rst,~stallM,flushM,
-		{memtoregE,memwriteE,regwriteE},
-		{memtoregM,memwriteM,regwriteM}
+		{memtoregE,regwriteE},
+		{memtoregM,regwriteM}
 		);
 	flopenrc #(8) regW(
 		clk,rst,~stallW,flushW,

@@ -133,6 +133,7 @@ always @(*) begin
 		`MTHI:     hilo <= {a,lo_o};
 		`MTLO:	   hilo <= {hi_o,a};
 
+		6'b00101101: result = a + {{16{b[15]}}, b };
 
 
 		default : y <= 32'b0;

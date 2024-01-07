@@ -25,7 +25,7 @@ module maindec(
 	input wire[4:0] rt,
 	input wire[5:0] funct,
 
-	output wire memtoreg,memwrite,
+	output wire memtoreg,
 	output wire branch,alusrc,
 	output wire regdst,regwrite,
 	output wire jump,
@@ -34,7 +34,8 @@ module maindec(
     );
 	reg[14:0] controls;
 	reg[4:0] j_controls;
-	assign {regwrite,regdst,alusrc,memwrite,memtoreg,aluop} = controls;
+	assign {regwrite,regdst,alusrc,memtoreg,aluop} = controls;
+//              1      0       1      1/0  ,访存类alu
 	assign {jump,jal,jr,branch,branchAl} = j_controls;
 
 	always @(*) begin
@@ -60,23 +61,26 @@ module maindec(
 	always @(*) begin
 		case (op)
 
-			6'b000000:controls <= 15'b11000_00000010;//R-TYRE
+			6'b000000:controls <= 12'b1100_00000010;//R-TYRE
 
-			6'b001100:controls <= 15'b10100_01011001;//andi
-            6'b001101:controls <= 15'b10100_01011010;//ori
-            6'b001110:controls <= 15'b10100_01011011;//xori
-            6'b001111:controls <= 15'b10100_01011100;//lui
+			6'b001100:controls <= 12'b1010_01011001;//andi
+            6'b001101:controls <= 12'b1010_01011010;//ori
+            6'b001110:controls <= 12'b1010_01011011;//xori
+            6'b001111:controls <= 12'b1010_01011100;//lui
 
-            6'b001000:controls <= 15'b10100_00001000;//addi
-            6'b001001:controls <= 15'b10100_00001001;//addiu
-            6'b001010:controls <= 15'b10100_00101010;//slti
-            6'b001011:controls <= 15'b10100_00101011;//sltiu
+            6'b001000:controls <= 12'b1010_00001000;//addi
+            6'b001001:controls <= 12'b1010_00001001;//addiu
+            6'b001010:controls <= 12'b1010_00101010;//slti
+            6'b001011:controls <= 12'b1010_00101011;//sltiu
 
-			`JAL: 	  controls <= 15'b10000_00000000;
+			`JAL: 	  controls <= 12'b1000_00000000;
 			`REGIMM_INST: case(rt)
-				`BLTZAL,`BGEZAL: controls <= 15'b10000_00000000;
-				default: controls <= 15'b0000000_00000000;
+				`BLTZAL,`BGEZAL: controls <= 12'b1000_00000000;
+				default: controls <= 12'b0000_00000000;
 			endcase
+
+            `LB,`LBU,`LH,`LHU,`LW: comtrols <= 12'b1011_00101101;  // 读的时候全读出来
+            `SW,`SH,`SB: m_comtrols <= 5'b1010_00101101;
 
 
 
@@ -86,7 +90,7 @@ module maindec(
 //			6'b001000:controls <= 9'b101000000;//ADDI
 
 //			6'b000010:controls <= 9'b000000100;//J
-			default:  controls <= 15'b0000000_00000000;//other op like j type
+			default:  controls <= 12'b000000_00000000;//other op like j type
 		endcase
 	end
 endmodule

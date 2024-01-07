@@ -24,7 +24,7 @@ module mips(
 	input wire clk,rst,
 	output wire[31:0] pcF,
 	input wire[31:0] instrF,
-	output wire memwriteM,
+	output wire[3:0] memwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM
     );
@@ -50,7 +50,7 @@ module mips(
 		alucontrolE,
 
 		//mem stage
-		memtoregM,memwriteM,regwriteM,AnsSwE,AddSwE,
+		memtoregM,regwriteM,AnsSwE,AddSwE,
 		stallM,flushM,
 		//write back stage
 		memtoregW,regwriteW,
@@ -80,6 +80,7 @@ module mips(
 		AnsSwE,AddSwE,
 		aluoutM,writedataM,
 		flushM,stallM,
+		memwriteM,
 		readdataM,
 		//writeback stage
 		memtoregW,
