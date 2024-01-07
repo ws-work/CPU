@@ -25,7 +25,7 @@ module hazard(
 	output wire stallF,flushF,
 	//decode stage
 	input wire[4:0] rsD,rtD,
-	input wire branchD,
+	input wire branchD,jumpD,
 	output wire forwardaD,forwardbD,
 	output wire stallD,flushD,
 	//execute stage
@@ -96,11 +96,11 @@ module hazard(
 		//stalling D stalls all previous stages
 
 
-	assign flushF = 1'b0;
-	assign flushD = 1'b0;
-	assign flushE = lwstallD | branchstallD;
-	assign flushM = 1'b0;
-	assign flushW = 1'b0;
+	assign #1 flushF = 1'b0;
+	assign #1 flushD = 1'b0;
+	assign #1 flushE = lwstallD | branchstallD | jumpD;
+	assign #1 flushM = 1'b0;
+	assign #1 flushW = 1'b0;
 
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store

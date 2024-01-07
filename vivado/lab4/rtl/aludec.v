@@ -37,7 +37,7 @@
             `EXE_ANDI_OP: alucontrol <= 6'b110100;//andi
             `EXE_ORI_OP : alucontrol <= 6'b110101;//ori
             `EXE_XORI_OP: alucontrol <= 6'b110111;//xori
-            `EXE_LUT_OP : alucontrol <= 6'b001000;//lui
+            `EXE_LUT_OP : alucontrol <= `LUI;//lui
 
 
 			default :
