@@ -27,7 +27,7 @@ module hazard(
 	input wire[4:0] rsD,rtD,
 	input wire branchD,jumpD,jrD, //
 	output wire forwardaD,forwardbD,
-	output wire jrforwardaD,jrb_l_astall,jrb_l_bstall,//
+	output wire jrb_l_astall,jrb_l_bstall,//
 	output wire stallD,flushD,
 	//execute stage
 	input wire[4:0] rsE,rtE,
@@ -200,7 +200,7 @@ endmodule
 //     // ------------------------- flush -------------------------
 //     assign flushF=(exception_type!=0);
 // 	assign flushD=(exception_type!=0);
-//     assign flushE = lwstallD | branchstallD |(exception_type!=0);
+//  assign flushE = lwstallD | branchstallD |(exception_type!=0);
 // 	assign flushM=(exception_type!=0);
 // 	assign flushW=(exception_type!=0);
 // endmodule

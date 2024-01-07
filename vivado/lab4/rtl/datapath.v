@@ -56,7 +56,7 @@ module datapath(
     wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD,jumpInstD;
     //decode stage
     wire [31:0] pcplus4D,pcplus8D,instrD;
-    wire forwardaD,forwardbD;
+    wire forwardaD,forwardbD,jrb_l_astall,jrb_l_bstall;
     wire [4:0] rsD,rtD,rdD,saD;
     wire flushD,stallD;
     wire [31:0] signimmD,signimmshD;
@@ -87,8 +87,9 @@ module datapath(
     stallF,flushF,
 	//decode stage
 	rsD,rtD,
-	branchD,jumpD,
+	branchD,jumpD,jrD,
 	forwardaD,forwardbD,
+    jrb_l_astall,jrb_l_bstall,
 	stallD,flushD,
 	//execute stage
 	 rsE,rtE,
@@ -115,7 +116,7 @@ module datapath(
     mux2 #(32) pcmux(pcnextbrFD,jumpInstD,njumpD,pcnextFD);
 
     mux2 #(32) jmpPcMux(
-        {pcplus4D[31:28],instrD[25:0],2'b00}, srcaD,
+        {pcplus4D[31:28],instrD[25:0],2'b00}, srca2D,
         jrD,
         jumpInstD
     );
