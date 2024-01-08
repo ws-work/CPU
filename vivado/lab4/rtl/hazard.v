@@ -103,11 +103,11 @@ module hazard(
 		//stalling D stalls all previous stages
 
 
-	assign #1 flushF = 1'b0;
-	assign #1 flushD = 1'b0;
-	assign #1 flushE = lwstallD | branchstallD | jumpD;
-	assign #1 flushM = 1'b0;
-	assign #1 flushW = 1'b0;
+	assign flushF = 1'b0;
+	assign flushD = 1'b0;
+	assign flushE = lwstallD | branchstallD ;
+	assign flushM = 1'b0;
+	assign flushW = 1'b0;
 
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store

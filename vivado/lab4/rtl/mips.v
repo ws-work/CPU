@@ -29,7 +29,8 @@ module mips(
 	input wire[31:0] readdataM,
 	output wire [31:0] pcW,resultW,
     output wire [4:0] writeregW,
-    output wire regwriteW
+    output wire regwriteW,
+	output wire mem_enM
     );
 
 	wire [5:0] opD,functD;
@@ -55,6 +56,7 @@ module mips(
 		//mem stage
 		memtoregM,regwriteM,AnsSwE,AddSwE,
 		stallM,flushM,
+		mem_enM,
 		//write back stage
 		memtoregW,regwriteW,
 		stallW,flushW

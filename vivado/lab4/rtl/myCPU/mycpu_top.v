@@ -29,7 +29,7 @@ module mycpu_top(
 
     wire [31:0] pcW,resultW;
     wire [4:0] writeregW;
-    wire regwriteW;
+    wire regwriteW,mem_enM;
 
     mips mips(
         .clk(clk),
@@ -48,6 +48,7 @@ module mycpu_top(
         .resultW(resultW),
         .writeregW(writeregW),
         .regwriteW(regwriteW)
+		.mem_enM(mem_enM)
     );
 
     assign inst_sram_en = 1'b1;
@@ -56,7 +57,7 @@ module mycpu_top(
     assign inst_sram_wdata = 32'b0;
     assign instr = inst_sram_rdata;
 
-    assign data_sram_en = 1'b1;
+    assign data_sram_en = mem_enM;
     assign data_sram_wen = memwrite;
     assign data_sram_addr = aluout;
     assign data_sram_wdata = writedata;

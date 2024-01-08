@@ -31,11 +31,12 @@ module maindec(
 	output wire regdst,regwrite,
 	output wire jump,
 	output wire[7:0] aluop,
-	output wire jal,jr,branchAl
+	output wire jal,jr,branchAl,
+    output wire mem_en
     );
 	reg[14:0] controls;
 	reg[4:0] j_controls;
-	assign {regwrite,regdst,alusrc,memtoreg,aluop} = controls;
+	assign {regwrite,regdst,alusrc,memtoreg,mem_en,aluop} = controls;
 //              1/0     0       1      1/0  ,访存类alu
 	assign {jump,jal,jr,branch,branchAl} = j_controls;
 
@@ -62,32 +63,32 @@ module maindec(
 	always @(*) begin
 		case (op)
 
-			6'b000000:controls <= 12'b1100_00000010;//R-TYRE
+			6'b000000:controls <= 13'b11000_00000010;//R-TYRE
 
-			6'b001100:controls <= 12'b1010_01011001;//andi
-            6'b001101:controls <= 12'b1010_01011010;//ori
-            6'b001110:controls <= 12'b1010_01011011;//xori
-            6'b001111:controls <= 12'b1010_01011100;//lui
+			6'b001100:controls <= 13'b10100_01011001;//andi
+            6'b001101:controls <= 13'b10100_01011010;//ori
+            6'b001110:controls <= 13'b10100_01011011;//xori
+            6'b001111:controls <= 13'b10100_01011100;//lui
 
-            6'b001000:controls <= 12'b1010_00001000;//addi
-            6'b001001:controls <= 12'b1010_00001001;//addiu
-            6'b001010:controls <= 12'b1010_00101010;//slti
-            6'b001011:controls <= 12'b1010_00101011;//sltiu
+            6'b001000:controls <= 13'b10100_00001000;//addi
+            6'b001001:controls <= 13'b10100_00001001;//addiu
+            6'b001010:controls <= 13'b10100_00101010;//slti
+            6'b001011:controls <= 13'b10100_00101011;//sltiu
 
-			`JAL: 	  controls <= 12'b1000_00000000;
+			`JAL: 	  controls <= 13'b10000_00000000;
 			`REGIMM_INST: case(rt)
-				`BLTZAL,`BGEZAL: controls <= 12'b1000_00000000;
-				default: controls <= 12'b0000_00000000;
+				`BLTZAL,`BGEZAL: controls <= 13'b10000_00000000;
+				default: controls <= 13'b00000_00000000;
 			endcase
 
-            `LB:    controls <= {4'b1011,`EXE_LB_OP};
-            `LBU:   controls <= {4'b1011,`EXE_LBU_OP};
-            `LH:    controls <= {4'b1011,`EXE_LH_OP};
-            `LHU:   controls <= {4'b1011,`EXE_LHU_OP};
-            `LW:    controls <= {4'b1011,`EXE_LW_OP};
-            `SW:    controls <= {4'b0010,`EXE_SW_OP};
-            `SH:    controls <= {4'b0010,`EXE_SH_OP};
-            `SB:    controls <= {4'b0010,`EXE_SB_OP};
+            `LB:    controls <= {5'b10111,`EXE_LB_OP};
+            `LBU:   controls <= {5'b10111,`EXE_LBU_OP};
+            `LH:    controls <= {5'b10111,`EXE_LH_OP};
+            `LHU:   controls <= {5'b10111,`EXE_LHU_OP};
+            `LW:    controls <= {5'b10111,`EXE_LW_OP};
+            `SW:    controls <= {5'b00101,`EXE_SW_OP};
+            `SH:    controls <= {5'b00101,`EXE_SH_OP};
+            `SB:    controls <= {5'b00101,`EXE_SB_OP};
 
 
 //			6'b100011:controls <= 9'b101001000;//LW
@@ -96,7 +97,7 @@ module maindec(
 //			6'b001000:controls <= 9'b101000000;//ADDI
 
 //			6'b000010:controls <= 9'b000000100;//J
-			default:  controls <= 12'b000000_00000000;//other op like j type
+			default:  controls <= 13'b0000000_00000000;//other op like j type
 		endcase
 	end
 endmodule
