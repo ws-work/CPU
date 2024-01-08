@@ -57,20 +57,20 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="94"/>
+    <Option Name="WTXSimLaunchSim" Val="98"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="30"/>
-    <Option Name="WTModelSimExportSim" Val="30"/>
-    <Option Name="WTQuestaExportSim" Val="30"/>
+    <Option Name="WTXSimExportSim" Val="33"/>
+    <Option Name="WTModelSimExportSim" Val="33"/>
+    <Option Name="WTQuestaExportSim" Val="33"/>
     <Option Name="WTIesExportSim" Val="27"/>
-    <Option Name="WTVcsExportSim" Val="30"/>
-    <Option Name="WTRivieraExportSim" Val="30"/>
-    <Option Name="WTActivehdlExportSim" Val="30"/>
+    <Option Name="WTVcsExportSim" Val="33"/>
+    <Option Name="WTRivieraExportSim" Val="33"/>
+    <Option Name="WTActivehdlExportSim" Val="33"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -211,6 +211,13 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../../../lab4/rtl/mmu.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PPRDIR/../../../../lab4/rtl/mux2.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -345,6 +352,11 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/tb_top_behav.wcfg">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="tb_top"/>
@@ -359,6 +371,7 @@
         <Option Name="PamPseudoTop" Val="pseudo_tb"/>
         <Option Name="SrcSet" Val="sources_1"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../tb_top_behav.wcfg"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/tb_top_behav.wcfg"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/tb_top_behav.wcfg"/>
       </Config>
     </FileSet>
@@ -436,32 +449,29 @@
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="clk_pll_synth_1" Type="Ft3:Synth" SrcSet="clk_pll" Part="xc7a100tcsg324-1" ConstrsSet="clk_pll" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/clk_pll_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/clk_pll_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/clk_pll_synth_1">
+    <Run Id="clk_pll_synth_1" Type="Ft3:Synth" SrcSet="clk_pll" Part="xc7a100tcsg324-1" ConstrsSet="clk_pll" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/clk_pll_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/clk_pll_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="data_ram_synth_1" Type="Ft3:Synth" SrcSet="data_ram" Part="xc7a100tcsg324-1" ConstrsSet="data_ram" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/data_ram_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/data_ram_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/data_ram_synth_1">
+    <Run Id="data_ram_synth_1" Type="Ft3:Synth" SrcSet="data_ram" Part="xc7a100tcsg324-1" ConstrsSet="data_ram" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/data_ram_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/data_ram_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>
     </Run>
-    <Run Id="inst_ram_synth_1" Type="Ft3:Synth" SrcSet="inst_ram" Part="xc7a100tcsg324-1" ConstrsSet="inst_ram" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/inst_ram_synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/inst_ram_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/inst_ram_synth_1">
+    <Run Id="inst_ram_synth_1" Type="Ft3:Synth" SrcSet="inst_ram" Part="xc7a100tcsg324-1" ConstrsSet="inst_ram" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/inst_ram_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/inst_ram_synth_1">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2022"/>
         <Step Id="synth_design"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2022"/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
       <RQSFiles/>

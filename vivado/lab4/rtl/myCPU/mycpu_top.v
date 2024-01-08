@@ -36,18 +36,18 @@ module mycpu_top(
         .rst(~resetn),
         //instr
         // .inst_en(inst_en),
-        .pcF(pc),                    //pcF
+        .pcconvertF(pc),                    //pcF
         .instrF(instr),              //instrF
         //data
         // .data_en(data_en),
         .memwriteM(memwrite),
-        .aluoutM(aluout),
+        .dataadr(aluout),
         .writedataM(writedata),
         .readdataM(readdata),
         .pcW(pcW),
         .resultW(resultW),
         .writeregW(writeregW),
-        .regwriteW(regwriteW)
+        .regwriteW(regwriteW),
 		.mem_enM(mem_enM)
     );
 
