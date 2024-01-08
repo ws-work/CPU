@@ -48,7 +48,9 @@ module datapath(
 
     input wire memtoregW,
     input wire regwriteW,
-    output wire flushW,stallW
+    output wire flushW,stallW,
+    output wire [31:0] pcW,resultW,
+    output wire [4:0] writeregW
 );
 
     //fetch stage
@@ -62,6 +64,7 @@ module datapath(
     wire flushD,stallD;
     wire [31:0] signimmD,signimmshD;
     wire [31:0] srcaD,srca2D,srcbD,srcb2D;
+    wire [31:0] pcD;
     //execute stage
     wire [1:0] forwardaE,forwardbE;
     wire [4:0] rsE,rtE,rdE,saE;
@@ -70,13 +73,15 @@ module datapath(
     wire [31:0] srcaE,srca2E,srcbE,srcb2E,srcb3E;
     wire [31:0] aluoutE,aluout2E;
     wire [31:0] pcplus8E;
+    wire [31:0] pcE;
     //mem stage
     wire [4:0] writeregM;
 	wire [7:0] alucontrolM;
     wire [31:0] writedataM;
+    wire [31:0] pcM;
     //writeback stage
-    wire [4:0] writeregW;
-    wire [31:0] aluoutW,readdataW,resultW;
+    // wire [4:0] writeregW;  输出给debug�?
+    wire [31:0] aluoutW,readdataW;
     wire divstallE;
     wire overflowE,zeroE;
     wire [63:0] aluoutE_64;
@@ -135,6 +140,7 @@ module datapath(
     //decode stage
     flopenrc #(32) r1D(clk,rst,~stallD,flushD,pcplus4F,pcplus4D);
     flopenrc #(32) r2D(clk,rst,~stallD,flushD,instrF,instrD);
+    flopenrc #(32) r3D(clk,rst,~stallD,flushD,pcF,pcD);
     signext se(instrD[15:0],signimmD);
     sl2 immsh(signimmD,signimmshD);
     adder pcadd2(pcplus4D,signimmshD,pcbranchD);
@@ -160,6 +166,7 @@ module datapath(
     flopenrc #(5) r6E(clk,rst,~stallE,flushE,rdD,rdE);
     flopenrc #(5) r7E(clk,rst,~stallE,flushE,saD,saE);
     flopenrc #(32) r8E(clk,rst,~stallE,flushE,pcplus8D,pcplus8E);
+    flopenrc #(32) r9E(clk,rst,~stallD,flushD,pcD,pcE);
 
     mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
     mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
@@ -199,6 +206,7 @@ module datapath(
     flopenrc #(32) r2M(clk,rst,~stallM,flushM,aluout2E,aluoutM);
     flopenrc #(5) r3M(clk,rst,~stallM,flushM,writereg2E,writeregM);
     flopenrc #(8) r4M(clk,rst,~stallM,flushM,alucontrolE,alucontrolM);
+    flopenrc #(32) r5M(clk,rst,~stallD,flushD,pcE,pcM);
 
     mux2 #(32) wrmux1(aluoutE,pcplus8E,AnsSwE,aluout2E);
     mux2 #(32) wrmux2(writeregE,5'b11111,AddSwE,writereg2E);
@@ -220,6 +228,7 @@ module datapath(
     flopenrc #(32) r2W(clk,rst,~stallW,flushW,readdataM,readdataW);
     flopenrc #(5) r3W(clk,rst,~stallW,flushW,writeregM,writeregW);
 	flopenrc #(8) r4W(clk,rst,~stallM,flushM,alucontrolM,alucontrolW);
+    flopenrc #(32) r5W(clk,rst,~stallD,flushD,pcM,pcW);
 
 	lw_select lw_select(
 		.adelW(1'b0),

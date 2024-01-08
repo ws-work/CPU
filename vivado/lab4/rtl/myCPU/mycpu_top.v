@@ -1,6 +1,7 @@
 module mycpu_top(
     input clk,
     input resetn,  //low active
+    input wire [5:0] ext_int,
 
     //cpu inst sram
     output        inst_sram_en   ,
@@ -13,13 +14,23 @@ module mycpu_top(
     output [3 :0] data_sram_wen  ,
     output [31:0] data_sram_addr ,
     output [31:0] data_sram_wdata,
-    input  [31:0] data_sram_rdata
+    input  [31:0] data_sram_rdata,
+    //debug
+	output wire [31:0] debug_wb_pc,
+	output wire [3:0] debug_wb_rf_wen,
+	output wire [4:0] debug_wb_rf_wnum,
+	output wire [31:0] debug_wb_rf_wdata
 );
 
 	wire [31:0] pc;
 	wire [31:0] instr;
 	wire [3:0] memwrite;
 	wire [31:0] aluout, writedata, readdata;
+
+    wire [31:0] pcW,resultW;
+    wire [4:0] writeregW;
+    wire regwriteW;
+
     mips mips(
         .clk(clk),
         .rst(~resetn),
@@ -32,7 +43,11 @@ module mycpu_top(
         .memwriteM(memwrite),
         .aluoutM(aluout),
         .writedataM(writedata),
-        .readdataM(readdata)
+        .readdataM(readdata),
+        .pcW(pcW),
+        .resultW(resultW),
+        .writeregW(writeregW),
+        .regwriteW(regwriteW)
     );
 
     assign inst_sram_en = 1'b1;
@@ -46,6 +61,11 @@ module mycpu_top(
     assign data_sram_addr = aluout;
     assign data_sram_wdata = writedata;
     assign readdata = data_sram_rdata;
+
+    assign	debug_wb_pc			= pcW;
+	assign	debug_wb_rf_wen		= {4{regwriteW}};
+	assign	debug_wb_rf_wnum	= writeregW;
+	assign	debug_wb_rf_wdata	= resultW;
 
     //ascii
     instdec instdec(
