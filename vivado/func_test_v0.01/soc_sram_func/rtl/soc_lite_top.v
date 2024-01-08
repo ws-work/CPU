@@ -136,7 +136,7 @@ wire [31:0] conf_rdata;
 
 //cpu
 mycpu_top cpu(
-    .clk              (cpu_clk   ),
+    .clk              (~cpu_clk   ),
     .resetn           (cpu_resetn),  //low active
     .ext_int          (6'd0      ),  //interrupt,high active
 
