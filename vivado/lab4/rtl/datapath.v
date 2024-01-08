@@ -35,13 +35,13 @@ module datapath(
     input wire memtoregE,
     input wire alusrcE,regdstE,
     input wire regwriteE,
-    input wire[5:0] alucontrolE,
+    input wire[7:0] alucontrolE,
     output wire flushE,stallE,
 
     input wire memtoregM,
     input wire regwriteM,
     input wire AnsSwE,AddSwE, //
-    output wire[31:0] aluoutM,writedataM,
+    output wire[31:0] aluoutM,writedata2M,
     output wire flushM,stallM,
 	output wire[3:0] memwriteM,
     input wire[31:0] readdataM,
@@ -72,7 +72,8 @@ module datapath(
     wire [31:0] pcplus8E;
     //mem stage
     wire [4:0] writeregM;
-	wire [5:0] alucontrolM;
+	wire [7:0] alucontrolM;
+    wire [31:0] writedataM;
     //writeback stage
     wire [4:0] writeregW;
     wire [31:0] aluoutW,readdataW,resultW;
@@ -83,7 +84,7 @@ module datapath(
     wire [31:0] lo_o;
     wire hilo_ena;
     wire div_running;
-	wire [5:0] alucontrolW;
+	wire [7:0] alucontrolW;
 	wire [31:0] readdata2W;
 
     //hazard detection
@@ -151,8 +152,8 @@ module datapath(
 
 
     //execute stage
-    flopenrc #(32) r1E(clk,rst,~stallE,flushE,srcaD,srcaE);
-    flopenrc #(32) r2E(clk,rst,~stallE,flushE,srcbD,srcbE);
+    flopenrc #(32) r1E(clk,rst,~stallE,flushE,srca2D,srcaE);
+    flopenrc #(32) r2E(clk,rst,~stallE,flushE,srcb2D,srcbE);
     flopenrc #(32) r3E(clk,rst,~stallE,flushE,signimmD,signimmE);
     flopenrc #(5) r4E(clk,rst,~stallE,flushE,rsD,rsE);
     flopenrc #(5) r5E(clk,rst,~stallE,flushE,rtD,rtE);
@@ -197,7 +198,7 @@ module datapath(
     flopenrc #(32) r1M(clk,rst,~stallM,flushM,srcb2E,writedataM);
     flopenrc #(32) r2M(clk,rst,~stallM,flushM,aluout2E,aluoutM);
     flopenrc #(5) r3M(clk,rst,~stallM,flushM,writereg2E,writeregM);
-    flopenrc #(6) r4M(clk,rst,~stallM,flushM,alucontrolE,alucontrolM);
+    flopenrc #(8) r4M(clk,rst,~stallM,flushM,alucontrolE,alucontrolM);
 
     mux2 #(32) wrmux1(aluoutE,pcplus8E,AnsSwE,aluout2E);
     mux2 #(32) wrmux2(writeregE,5'b11111,AddSwE,writereg2E);
@@ -209,11 +210,16 @@ module datapath(
 		.memwriteM(memwriteM)
 	);
 
+    assign writedata2M = (alucontrolM == `EXE_SB_OP)? {{writedataM[7:0]},{writedataM[7:0]},{writedataM[7:0]},{writedataM[7:0]}}:
+                    (alucontrolM == `EXE_SH_OP)? {{writedataM[15:0]},{writedataM[15:0]}}:
+                    (alucontrolM == `EXE_SW_OP)? {{writedataM[31:0]}}:
+                    writedataM;
+
     //writeback stage
     flopenrc #(32) r1W(clk,rst,~stallW,flushW,aluoutM,aluoutW);
     flopenrc #(32) r2W(clk,rst,~stallW,flushW,readdataM,readdataW);
     flopenrc #(5) r3W(clk,rst,~stallW,flushW,writeregM,writeregW);
-	flopenrc #(6) r4W(clk,rst,~stallM,flushM,alucontrolM,alucontrolW);
+	flopenrc #(8) r4W(clk,rst,~stallM,flushM,alucontrolM,alucontrolW);
 
 	lw_select lw_select(
 		.adelW(1'b0),

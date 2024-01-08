@@ -32,7 +32,7 @@ module mips(
 	wire [5:0] opD,functD;
 	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,
 			regwriteE,regwriteM,regwriteW;
-	wire [5:0] alucontrolE;
+	wire [7:0] alucontrolE;
 	wire stallE,flushE,stallM,flushM,stallW,flushW,equalD;
 	wire [4:0] rtD;
 	wire njumpD,jumpD,jrD,AnsSwE,AddSwE;

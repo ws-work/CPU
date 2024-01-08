@@ -18,13 +18,14 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
+`include "defines.vh"
 `include "defines2.vh"
 
 module alu(
 	input wire clk,rst,
 	input wire[31:0] a,b,
 	input wire[4:0] sa,
-	input wire[5:0] op,
+	input wire[7:0] op,
 	input wire[31:0] lo_o,
 	input wire[31:0] hi_o,
 	output reg[31:0] y,
@@ -92,32 +93,32 @@ assign subresult = a + (~b + 1);
 
 always @(*) begin
 	case (op)
-		6'b000000: y <= b << sa;
-		6'b000010: y <= b >> sa;
-		6'b000011: y <= ({32{b[31]}} << (6'd32 - {1'b0,sa})) | b>>sa ;
-		6'b000100: y <= b << a[4:0];
-		6'b000110: y <= b >> a[4:0];
-		6'b000111: y <= ({32{b[31]}} << (6'd32 - {1'b0,a[4:0]})) | b>>a[4:0];
-		6'b100100: y <= a & b;
-		6'b110100: y <= a & { {16{1'b0}} ,b[15:0]};
-		6'b100101: y <= a | b;
-		6'b110101: y <= a | { {16{1'b0}} ,b[15:0]};
-		6'b100110: y <= a ^ b;
-		6'b110111: y <= a ^ { {16{1'b0}} ,b[15:0]};
-		6'b100111: y <= ~(a|b);
-		6'b001111: y <= {b[15:0],{16{1'b0}}};//lui
+		8'b00000000: y <= b << sa;
+		8'b00000010: y <= b >> sa;
+		8'b00000011: y <= ({32{b[31]}} << (6'd32 - {1'b0,sa})) | b>>sa ;
+		8'b00000100: y <= b << a[4:0];
+		8'b00000110: y <= b >> a[4:0];
+		8'b00000111: y <= ({32{b[31]}} << (6'd32 - {1'b0,a[4:0]})) | b>>a[4:0];
+		8'b00100100: y <= a & b;
+		8'b00110100: y <= a & { {16{1'b0}} ,b[15:0]};
+		8'b00100101: y <= a | b;
+		8'b00110101: y <= a | { {16{1'b0}} ,b[15:0]};
+		8'b00100110: y <= a ^ b;
+		8'b00110111: y <= a ^ { {16{1'b0}} ,b[15:0]};
+		8'b00100111: y <= ~(a|b);
+		`EXE_LUI_OP: y <= {b[15:0],{16{1'b0}}};
 
-		6'b101010: y <= (a[31] && !b[31]) || (!a[31] && !b[31] && subresult[31]) || (a[31] && b[31] && subresult[31]);
+		8'b00101010: y <= (a[31] && !b[31]) || (!a[31] && !b[31] && subresult[31]) || (a[31] && b[31] && subresult[31]);
 
-		6'b100000,6'b100001: y <= a + b;                //add
-		6'b100010,6'b100011: y <= a + (~b + 1);         //sub
+		8'b00100000,8'b00100001: y <= a + b;                //add
+		8'b00100010,8'b00100011: y <= a + (~b + 1);         //sub
 
-		6'b101010: y <=  $signed(a)<$signed(b) ? 1 : 0; //slt
-		6'b101011: y <= a < b ? 1 : 0;					//sltu
+		8'b00101010: y <=  $signed(a)<$signed(b) ? 1 : 0;	//slt
+		8'b00101011: y <= a < b ? 1 : 0;					//sltu
 
-		`MULT:     hilo <= hilo_tmp;
-		`MULTU:    hilo <= hilo_tmp;
-		`DIV,`DIVU:begin
+		`EXE_MULT_OP:     hilo <= hilo_tmp;
+		`EXE_MULTU_OP:    hilo <= hilo_tmp;
+		`EXE_DIV_OP,`EXE_DIVU_OP:begin
 				if (ready_o == 1'b0)begin
 					start_i <= 1'b1;
 					div_running <= 1'b1;
@@ -128,13 +129,19 @@ always @(*) begin
 				end
 			end
 
-		`MFHI:     y <= hi_o;
-		`MFLO:     y <= lo_o;
-		`MTHI:     hilo <= {a,lo_o};
-		`MTLO:	   hilo <= {hi_o,a};
+		`EXE_MFHI_OP:     y <= hi_o;
+		`EXE_MFLO_OP:     y <= lo_o;
+		`EXE_MTHI_OP:     hilo <= {a,lo_o};
+		`EXE_MTLO_OP:	  hilo <= {hi_o,a};
 
-		6'b00101101: result = a + {{16{b[15]}}, b };
-
+		`EXE_LB_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_LBU_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_LH_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_LHU_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_LW_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_SW_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_SH_OP	:     y = a + {{16{b[15]}}, b };
+		`EXE_SB_OP	:     y = a + {{16{b[15]}}, b };
 
 		default : y <= 32'b0;
 	endcase

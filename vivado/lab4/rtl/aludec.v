@@ -23,32 +23,25 @@
  module aludec(
 	input wire[5:0] funct,
 	input wire[7:0] aluop,
-	output reg[5:0] alucontrol
+	output reg[7:0] alucontrol
     );
 	always @(*) begin
 		case (aluop)
-            8'b00000010: alucontrol <= funct;//and,or,xor,nor,sll,srl,sra, add(overflow),sub, addu,subu,sltu,div
+            8'b00000010: alucontrol <= {2'b0,funct};//and,or,xor,nor,sll,srl,sra, add(overflow),sub, addu,subu,sltu,div
 
-            8'b00001000: alucontrol <= 6'b100000;//addi(overflow)
-            8'b00001001: alucontrol <= 6'b100001;//addiu
-            8'b00101010: alucontrol <= 6'b101010;//slti
-            8'b00101011: alucontrol <= 6'b101011;//sltiu
+            8'b00001000: alucontrol <= 8'b00100000;//addi(overflow)
+            8'b00001001: alucontrol <= 8'b00100001;//addiu
+            8'b00101010: alucontrol <= 8'b00101010;//slti
+            8'b00101011: alucontrol <= 8'b00101011;//sltiu
 
-            `EXE_ANDI_OP: alucontrol <= 6'b110100;//andi
-            `EXE_ORI_OP : alucontrol <= 6'b110101;//ori
-            `EXE_XORI_OP: alucontrol <= 6'b110111;//xori
-            `EXE_LUT_OP : alucontrol <= `LUI;//lui
-            8'b00101101 : alucontrol <= 6'b101101;
+            `EXE_ANDI_OP: alucontrol <= 8'b00110100;//andi
+            `EXE_ORI_OP : alucontrol <= 8'b00110101;//ori
+            `EXE_XORI_OP: alucontrol <= 8'b00110111;//xori
+            `EXE_LUI_OP : alucontrol <= `EXE_LUI_OP;//lui
+            // 8'b00101101 : alucontrol <= 8'b101101;
 
 
-			default :
-//				6'b100000:alucontrol <= 6'b010; //add
-//				6'b100010:alucontrol <= 6'b110; //sub
-//				6'b100100:alucontrol <= 6'b000; //and
-//				6'b100101:alucontrol <= 6'b001; //or
-//				6'b101010:alucontrol <= 6'b111; //slt
-
-				alucontrol <= 6'b000000;
+			default :     alucontrol <= aluop;
 
 		endcase
 

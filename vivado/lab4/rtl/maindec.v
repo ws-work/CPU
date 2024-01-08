@@ -18,6 +18,7 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
+`include "defines.vh"
 `include "defines2.vh"
 
 module maindec(
@@ -35,7 +36,7 @@ module maindec(
 	reg[14:0] controls;
 	reg[4:0] j_controls;
 	assign {regwrite,regdst,alusrc,memtoreg,aluop} = controls;
-//              1      0       1      1/0  ,访存类alu
+//              1/0     0       1      1/0  ,访存类alu
 	assign {jump,jal,jr,branch,branchAl} = j_controls;
 
 	always @(*) begin
@@ -79,9 +80,14 @@ module maindec(
 				default: controls <= 12'b0000_00000000;
 			endcase
 
-            `LB,`LBU,`LH,`LHU,`LW: comtrols <= 12'b1011_00101101;  // 读的时候全读出来
-            `SW,`SH,`SB: m_comtrols <= 5'b1010_00101101;
-
+            `LB:    controls <= {4'b1011,`EXE_LB_OP};
+            `LBU:   controls <= {4'b1011,`EXE_LBU_OP};
+            `LH:    controls <= {4'b1011,`EXE_LH_OP};
+            `LHU:   controls <= {4'b1011,`EXE_LHU_OP};
+            `LW:    controls <= {4'b1011,`EXE_LW_OP};
+            `SW:    controls <= {4'b0010,`EXE_SW_OP};
+            `SH:    controls <= {4'b0010,`EXE_SH_OP};
+            `SB:    controls <= {4'b0010,`EXE_SB_OP};
 
 
 //			6'b100011:controls <= 9'b101001000;//LW

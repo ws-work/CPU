@@ -30,7 +30,7 @@ module controller(
 	input wire stallE,flushE,
 	output wire memtoregE,alusrcE,
 	output wire regdstE,regwriteE,
-	output wire[5:0] alucontrolE,
+	output wire[7:0] alucontrolE,
 
 	//mem stage
 	output wire memtoregM,regwriteM,AnsSwE,AddSwE,
@@ -45,7 +45,7 @@ module controller(
 	wire[7:0] aluopD;
 	wire memtoregD,alusrcD,
 		regdstD,regwriteD,jalD,balD;
-	wire[5:0] alucontrolD;
+	wire[7:0] alucontrolD;
 
 	//execute stage
 	wire jalE,jrE,balE;
@@ -71,7 +71,7 @@ module controller(
 	assign AnsSwE =  AddSwE | jrE;
 
 	//pipeline registers
-	flopenrc #(14) regE(
+	flopenrc #(16) regE(
 		clk,
 		rst,
 		~stallE,
