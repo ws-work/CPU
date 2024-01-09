@@ -80,7 +80,7 @@ module datapath(
     wire [31:0] writedataM;
     wire [31:0] pcM;
     //writeback stage
-    // wire [4:0] writeregW;  输出给debug�?
+    // wire [4:0] writeregW;  输出给debug�?
     wire [31:0] aluoutW,readdataW;
     wire divstallE;
     wire overflowE,zeroE;
@@ -166,7 +166,7 @@ module datapath(
     flopenrc #(5) r6E(clk,rst,~stallE,flushE,rdD,rdE);
     flopenrc #(5) r7E(clk,rst,~stallE,flushE,saD,saE);
     flopenrc #(32) r8E(clk,rst,~stallE,flushE,pcplus8D,pcplus8E);
-    flopenrc #(32) r9E(clk,rst,~stallD,flushD,pcD,pcE);
+    flopenrc #(32) r9E(clk,rst,~stallE,flushE,pcD,pcE);
 
     mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
     mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
@@ -206,7 +206,7 @@ module datapath(
     flopenrc #(32) r2M(clk,rst,~stallM,flushM,aluout2E,aluoutM);
     flopenrc #(5) r3M(clk,rst,~stallM,flushM,writereg2E,writeregM);
     flopenrc #(8) r4M(clk,rst,~stallM,flushM,alucontrolE,alucontrolM);
-    flopenrc #(32) r5M(clk,rst,~stallD,flushD,pcE,pcM);
+    flopenrc #(32) r5M(clk,rst,~stallM,flushM,pcE,pcM);
 
     mux2 #(32) wrmux1(aluoutE,pcplus8E,AnsSwE,aluout2E);
     mux2 #(32) wrmux2(writeregE,5'b11111,AddSwE,writereg2E);
@@ -227,8 +227,8 @@ module datapath(
     flopenrc #(32) r1W(clk,rst,~stallW,flushW,aluoutM,aluoutW);
     flopenrc #(32) r2W(clk,rst,~stallW,flushW,readdataM,readdataW);
     flopenrc #(5) r3W(clk,rst,~stallW,flushW,writeregM,writeregW);
-	flopenrc #(8) r4W(clk,rst,~stallM,flushM,alucontrolM,alucontrolW);
-    flopenrc #(32) r5W(clk,rst,~stallD,flushD,pcM,pcW);
+	flopenrc #(8) r4W(clk,rst,~stallW,flushW,alucontrolM,alucontrolW);
+    flopenrc #(32) r5W(clk,rst,~stallW,flushW,pcM,pcW);
 
 	lw_select lw_select(
 		.adelW(1'b0),

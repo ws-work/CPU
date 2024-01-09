@@ -98,8 +98,8 @@ module hazard(
 	assign stallD = lwstallD | branchstallD | div_running | jrstall;
 	assign stallF = stallD;
 	assign stallE = div_running;
-	assign stallM = stallE;
-	assign stallW = stallE;
+	assign stallM = 1'b0;//stallE;
+	assign stallW = 1'b0;//stallE;
 		//stalling D stalls all previous stages
 
 
