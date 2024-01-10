@@ -25,6 +25,7 @@ module maindec(
 	input wire[5:0] op,
 	input wire[4:0] rt,
 	input wire[5:0] funct,
+	input wire [31:0] instr,
 
 	output wire memtoreg,
 	output wire branch,alusrc,
@@ -32,14 +33,22 @@ module maindec(
 	output wire jump,
 	output wire[7:0] aluop,
 	output wire jal,jr,branchAl,
-    output wire mem_en
+    output wire mem_en,
+	output wire invalid,
+	output wire cp0we,
+	output wire cp0sw
     );
-	reg[14:0] controls;
+	reg[12:0] controls;
 	reg[4:0] j_controls;
+	reg[2:0] cp0_controls;
+	wire has;
 	assign {regwrite,regdst,alusrc,memtoreg,mem_en,aluop} = controls;
 //              1/0     0       1      1/0  ,访存类alu
 	assign {jump,jal,jr,branch,branchAl} = j_controls;
+	assign {has,cp0we,cp0sw} = cp0_controls;
 
+
+	//j_controls
 	always @(*) begin
 		case(op)
 			`BEQ,`BNE,`BGTZ,`BLEZ: 	j_controls <= 5'b00010;
@@ -60,10 +69,18 @@ module maindec(
 		endcase
 	end
 
+
+	//controls
 	always @(*) begin
 		case (op)
-
-			6'b000000:controls <= 13'b11000_00000010;//R-TYRE
+			6'b000000:
+				case(funct)
+					`EXE_BREAK,`EXE_SYSCALL:  controls <= 13'b00000_00000010;//特权指令
+					`EXE_MULT,`EXE_MULTU,`EXE_DIV,`EXE_DIVU: controls <= 13'b00000_00000010;
+					`EXE_JR: controls <= 13'b00000_00000010;
+					`EXE_MTHI,`EXE_MTLO: controls <= 13'b00000_00000010;
+					default: controls <= 13'b11000_00000010;//R-TYRE
+				endcase
 
 			6'b001100:controls <= 13'b10100_01011001;//andi
             6'b001101:controls <= 13'b10100_01011010;//ori
@@ -90,14 +107,34 @@ module maindec(
             `SH:    controls <= {5'b00101,`EXE_SH_OP};
             `SB:    controls <= {5'b00101,`EXE_SB_OP};
 
-
-//			6'b100011:controls <= 9'b101001000;//LW
-//			6'b101011:controls <= 9'b001010000;//SW
-//			6'b000100:controls <= 9'b000100001;//BEQ
-//			6'b001000:controls <= 9'b101000000;//ADDI
-
-//			6'b000010:controls <= 9'b000000100;//J
-			default:  controls <= 13'b0000000_00000000;//other op like j type
+			6'b010000:  if (instr[25:21]==5'b00000 && instr[10:3]==0)
+							controls <= 13'b10000_00000000;//mfc0
+						else controls<= 13'b00000_00000000;
+			default:  controls <= 13'b00000_00000000;//other op like j type
 		endcase
 	end
+
+	//cp0_controls
+	always @(*)begin
+		case(op)
+			6'b000000:
+				 case(funct)
+					 `EXE_BREAK,`EXE_SYSCALL:	cp0_controls <= 3'b100;
+					 default : 		cp0_controls <= 3'b000;
+				 endcase
+			6'b010000:
+				if (instr == `EXE_ERET)
+                    cp0_controls <= 3'b100;      //eret
+                else if (instr[25:21]==5'b00100 && instr[10:3]==0)
+                    cp0_controls <= 3'b010;      //mtc0
+                else if (instr[25:21]==5'b00000 && instr[10:3]==0)
+                    cp0_controls <= 3'b001;      //mfc0
+                else
+                    cp0_controls <= 3'b000;
+			default:cp0_controls <= 3'b000;
+		endcase
+	end
+
+	assign invalid = {j_controls,controls,cp0_controls} == 23'b0;
+
 endmodule

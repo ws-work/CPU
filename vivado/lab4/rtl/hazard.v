@@ -23,6 +23,7 @@
 module hazard(
 	//fetch stage
 	output wire stallF,flushF,
+	output wire [1:0] epc_sw,///
 	//decode stage
 	input wire[4:0] rsD,rtD,
 	input wire branchD,jumpD,jrD, //
@@ -34,7 +35,7 @@ module hazard(
 	input wire[4:0] writeregE,
 	input wire regwriteE,
 	input wire memtoregE,
-	input wire div_running,
+	input wire div_stall,
 	output reg[1:0] forwardaE,forwardbE,
 	output wire stallE,flushE,
 	//mem stage
@@ -42,6 +43,7 @@ module hazard(
 	input wire regwriteM,
 	input wire memtoregM,
 	output wire stallM,flushM,
+	input wire [31:0] excepttype,///
 
 	//write back stage
 	input wire[4:0] writeregW,
@@ -54,6 +56,18 @@ module hazard(
 	//forwarding sources to D stage (branch equality)
 	assign forwardaD = (rsD != 0 & rsD == writeregM & regwriteM);
 	assign forwardbD = (rtD != 0 & rtD == writeregM & regwriteM);
+
+	assign epc_sw = (excepttype ==32'h0000_0001) ||
+					(excepttype ==32'h0000_0004) ||
+					(excepttype ==32'h0000_0005) ||
+					(excepttype ==32'h0000_0008) ||
+					(excepttype ==32'h0000_0009) ||
+					(excepttype ==32'h0000_000a) ||
+					(excepttype ==32'h0000_000c) ? 2'b10 : // 32'hbfc00380
+					(excepttype ==32'h0000_000e) ? 2'b01 : // epc
+					2'b00;								   // normal
+
+
 
 	//forwarding sources to E stage (ALU)
 
@@ -95,19 +109,19 @@ module hazard(
 	assign jrb_l_bstall = (jrD|branchD) && ((memtoregE && (writeregE==rtD)) || (memtoregM && (writeregM==rtD)));
 
 
-	assign stallD = lwstallD | branchstallD | div_running | jrstall;
-	assign stallF = stallD;
-	assign stallE = div_running;
+	assign stallD = lwstallD | branchstallD | div_stall | jrstall;
+	assign stallF = stallD & (epc_sw==2'b0);
+	assign stallE = div_stall;
 	assign stallM = 1'b0;//stallE;
 	assign stallW = 1'b0;//stallE;
 		//stalling D stalls all previous stages
 
 
-	assign flushF = 1'b0;
-	assign flushD = 1'b0;
-	assign flushE = lwstallD | branchstallD ;
-	assign flushM = 1'b0;
-	assign flushW = 1'b0;
+	assign flushF = (excepttype!=0);
+	assign flushD = (excepttype!=0);
+	assign flushE = lwstallD | branchstallD | (excepttype!=0);
+	assign flushM = (excepttype!=0);
+	assign flushW = (excepttype!=0);
 
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store

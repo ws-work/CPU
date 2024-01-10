@@ -35,6 +35,8 @@ module mips(
 
 	wire [31:0] pcF;
 	wire [5:0] opD,functD;
+	wire [31:0] instrD;
+	wire invalidD;
 	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,
 			regwriteE,regwriteM;
 	wire [7:0] alucontrolE;
@@ -42,6 +44,7 @@ module mips(
 	wire [31:0] aluoutM;
 	wire [4:0] rtD;
 	wire njumpD,jumpD,jrD,AnsSwE,AddSwE;
+	wire cp0weM,cp0swM;
 
 	mmu mmu0(
 	.inst_vaddr(pcF),
@@ -55,8 +58,10 @@ module mips(
 	controller c(
 		clk,rst,
 		//decode stage
-		opD,functD,rtD,equalD,
-		pcsrcD,branchD,njumpD,jumpD,jrD,
+		opD,functD,rtD,
+		instrD,
+		equalD,
+		pcsrcD,branchD,njumpD,jumpD,jrD,invalidD,
 
 		//execute stage
 		stallE,flushE,
@@ -70,7 +75,8 @@ module mips(
 		mem_enM,
 		//write back stage
 		memtoregW,regwriteW,
-		stallW,flushW
+		stallW,flushW,
+		cp0weM,cp0swM
 		);
 	datapath dp(
 		clk,rst,
@@ -84,6 +90,8 @@ module mips(
 		njumpD,jumpD,
 		equalD,
 		opD,functD,
+		invalidD,
+		instrD,
 		//execute stage
 		memtoregE,
 		alusrcE,regdstE,
@@ -98,6 +106,7 @@ module mips(
 		flushM,stallM,
 		memwriteM,
 		readdataM,
+		cp0weM,cp0swM,
 		//writeback stage
 		memtoregW,
 		regwriteW,

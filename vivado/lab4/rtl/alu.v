@@ -33,28 +33,27 @@ module alu(
 	output wire zero,
 	output wire hilo_ena,
 	output reg [63:0] hilo,
-	output reg div_running //div在运行时，暂停流水线
+	output wire div_running //div在运行时，暂停流水线
     );
 
 wire [31:0] subresult,mult_a,mult_b;
 wire [63:0] hilo_tmp;
 
-reg start_i;
+reg div_start;
 wire signed_div_i,annul_i,ready_o;
 wire [31:0] opdata1_i,opdata2_i;
 wire [63:0] result_o;
 
 assign signed_div_i = (op == `DIV)? 1'b1: 1'b0;
 assign annul_i =1'b0;
-
+assign div_running = div_start && (op == `EXE_DIVU || op == `EXE_DIV);
 
 always @(rst)begin
-	start_i <= 1'b0;
-	div_running <= 1'b0;
+	div_start <= 1'b0;
 end
 
 // always @(posedge clk)begin
-// 	if (!div_running)begin
+// 	if (!div_start)begin
 // 		opdata1_i <= a;
 // 		opdata2_i <= b;
 // 	end
@@ -69,7 +68,7 @@ div div(
 	.signed_div_i(signed_div_i),
 	.opdata1_i(opdata1_i),
 	.opdata2_i(opdata2_i),
-	.start_i(start_i),
+	.start_i(div_running),
 	.annul_i(annul_i),
 	.result_o(result_o),
 	.ready_o(ready_o)
@@ -85,8 +84,8 @@ assign hilo_tmp = (op == `MULT) ? ((a[31]^b[31] == 1'b1)? ~(mult_a*mult_b)+1 :mu
 
 assign hilo_ena = (op ==  `MULT) || (op == `MULTU) || (op == `MTHI) || (op == `MTLO) || (op == `DIV) || (op == `DIVU)? 1'b1 :1'b0;
 
-assign overflow = (op == 100000)? (y[31] && !a[31] && !b[31]) || (!y[31] && a[31] && b[31]):
-                  (op == 100010)? ((a[31]&!b[31])&!y[31]) || ((!a[31]&b[31])&y[31]):
+assign overflow = (op == `EXE_ADD_OP)? (~y[31] & a[31] & b[31]) | (y[31] & ~a[31] & ~b[31])://(y[31] && !a[31] && !b[31]) || (!y[31] && a[31] && b[31]):
+                  (op == `EXE_SUB_OP)? (~y[31] & a[31] & ~b[31]) | (y[31] & ~a[31] & b[31])://((a[31]&!b[31])&!y[31]) || ((!a[31]&b[31])&y[31]):
                   1'b0;
 
 assign subresult = a + (~b + 1);
@@ -120,11 +119,9 @@ always @(*) begin
 		`EXE_MULTU_OP:    hilo <= hilo_tmp;
 		`EXE_DIV_OP,`EXE_DIVU_OP:begin
 				if (ready_o == 1'b0)begin
-					start_i <= 1'b1;
-					div_running <= 1'b1;
+					div_start <= 1'b1;
 				end else if(ready_o == 1'b1) begin
-					start_i <= 1'b0;
-					div_running <= 1'b0;
+					div_start <= 1'b0;
 					hilo <= result_o;
 				end
 			end
